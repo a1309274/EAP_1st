@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>テキスト理解の認知メカニズム 到達度テスト</title>
+<style>
+  :root {
+    --blue: #1769d6;
+    --blue-dark: #0f4fa3;
+    --green: #1f9d55;
+    --red: #d9433f;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #1c2530;
+    --muted: #5e6b7a;
+    --border: #d8dee6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic",
+      "Noto Sans JP", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 24px 18px 80px; }
+  header.site {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: #fff;
+    padding: 28px 18px;
+    text-align: center;
+  }
+  header.site h1 { margin: 0; font-size: 1.35rem; letter-spacing: .02em; }
+  header.site p { margin: 8px 0 0; font-size: .9rem; opacity: .92; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  h2 { font-size: 1.15rem; margin: 0 0 14px; color: var(--blue-dark); }
+  h2 .num {
+    display: inline-block; background: var(--blue); color: #fff;
+    border-radius: 6px; padding: 1px 9px; font-size: .85rem; margin-right: 8px;
+  }
+  label.fld { display: block; font-weight: 600; margin: 14px 0 6px; }
+  input[type=text], textarea {
+    width: 100%; padding: 11px 12px; font-size: 1rem;
+    border: 1px solid var(--border); border-radius: 8px; font-family: inherit;
+    background: #fff; color: var(--text);
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
+  .btn {
+    display: inline-block; cursor: pointer; border: none; border-radius: 8px;
+    padding: 12px 26px; font-size: 1rem; font-weight: 700; font-family: inherit;
+    background: var(--blue); color: #fff; transition: background .15s;
+  }
+  .btn:hover { background: var(--blue-dark); }
+  .btn.secondary { background: #eef2f7; color: var(--blue-dark); }
+  .btn.secondary:hover { background: #e0e7f0; }
+  .btn.danger { background: var(--red); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .meta { color: var(--muted); font-size: .88rem; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 11px 13px; margin: 8px 0; cursor: pointer; background: #fff;
+    transition: border-color .12s, background .12s;
+  }
+  .opt:hover { border-color: var(--blue); background: #f7faff; }
+  .opt input { margin-top: 4px; flex-shrink: 0; }
+  .opt.sel { border-color: var(--blue); background: #eef5ff; }
+  .qtext { font-weight: 600; margin-bottom: 4px; }
+  .qtag {
+    font-size: .75rem; color: #fff; background: var(--muted);
+    border-radius: 4px; padding: 1px 7px; margin-left: 6px; font-weight: 600;
+    vertical-align: middle;
+  }
+  .progress-bar { height: 8px; background: #e3e8ef; border-radius: 4px; overflow: hidden; margin: 6px 0 0; }
+  .progress-bar > div { height: 100%; background: var(--blue); width: 0; transition: width .3s; }
+  .hidden { display: none; }
+  .score-big { font-size: 3rem; font-weight: 800; line-height: 1; }
+  .pass { color: var(--green); }
+  .fail { color: var(--red); }
+  .pill { display: inline-block; border-radius: 999px; padding: 4px 16px; font-weight: 700; font-size: .95rem; }
+  .pill.pass { background: #e3f6ec; color: var(--green); }
+  .pill.fail { background: #fbe6e5; color: var(--red); }
+  .breakdown { margin: 16px 0; }
+  .breakdown div { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+  .review-item { border-left: 4px solid var(--border); padding: 8px 14px; margin: 10px 0; background: #fafbfc; border-radius: 0 8px 8px 0; }
+  .review-item.ok { border-color: var(--green); }
+  .review-item.ng { border-color: var(--red); }
+  .review-item .ans { font-size: .9rem; color: var(--muted); margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  th, td { border: 1px solid var(--border); padding: 7px 9px; text-align: left; }
+  th { background: #eef2f7; }
+  td.c, th.c { text-align: center; }
+  .note { background: #fff8e6; border: 1px solid #f0e0a8; border-radius: 8px; padding: 12px 14px; font-size: .85rem; color: #6b5a16; }
+  .teacher-link { text-align: center; margin-top: 10px; }
+  .teacher-link a { color: var(--muted); font-size: .82rem; text-decoration: none; border-bottom: 1px dotted var(--muted); cursor: pointer; }
+  .err { color: var(--red); font-size: .85rem; margin-top: 6px; }
+  .scroll-x { overflow-x: auto; }
+</style>
+</head>
+<body>
+<header class="site">
+  <h1>テキスト理解の認知メカニズム　到達度テスト</h1>
+  <p>英語学アカデミックプラクティス／90点以上で合格</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== START SCREEN ===== -->
+  <section id="screen-start">
+    <div class="card">
+      <h2>受験の前に</h2>
+      <p>この到達度テストは、授業で学んだ「テキスト理解の認知メカニズム」の理解度を確認するものです。</p>
+      <ul class="meta" style="padding-left:1.2em;">
+        <li>選択式問題 10問（各6点）＋ 短文回答 4問（各10点）の<strong>100点満点</strong></li>
+        <li><strong>90点以上で合格</strong>です。90点未満の場合はやり直してください。</li>
+        <li>短文回答は、キーワードに基づいて自動採点されます。</li>
+      </ul>
+      <label class="fld" for="in-name">氏名</label>
+      <input type="text" id="in-name" placeholder="例：細田 雅也" autocomplete="off" />
+      <label class="fld" for="in-id">学籍番号</label>
+      <input type="text" id="in-id" placeholder="例：A1234567" autocomplete="off" />
+      <div id="start-err" class="err"></div>
+      <div style="margin-top:20px;">
+        <button class="btn" id="btn-start">テストを始める</button>
+      </div>
+    </div>
+    <div class="teacher-link">
+      <a id="link-teacher">教員用ページ（成績ダウンロード）</a>
+    </div>
+  </section>
+
+  <!-- ===== QUIZ SCREEN ===== -->
+  <section id="screen-quiz" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="meta" id="quiz-who"></span>
+        <span class="meta">100点満点・合格ライン90点</span>
+      </div>
+      <div class="progress-bar"><div id="progress"></div></div>
+    </div>
+    <div id="questions"></div>
+    <div class="card">
+      <div id="quiz-err" class="err"></div>
+      <button class="btn" id="btn-submit">採点する</button>
+      <span class="meta" id="submit-hint" style="margin-left:12px;"></span>
+    </div>
+  </section>
+
+  <!-- ===== RESULT SCREEN ===== -->
+  <section id="screen-result" class="hidden">
+    <div class="card" style="text-align:center;">
+      <div class="meta" id="result-who"></div>
+      <div class="score-big" id="result-score"></div>
+      <div class="meta">／ 100点</div>
+      <div style="margin:14px 0;"><span id="result-pill" class="pill"></span></div>
+      <div class="breakdown" id="result-breakdown"></div>
+      <div id="send-status" class="meta" style="margin:8px 0;"></div>
+      <div id="result-actions"></div>
+    </div>
+    <div class="card">
+      <h2>解答の確認</h2>
+      <p class="meta">復習に役立ててください。やり直しの際は問題と選択肢の順序がシャッフルされます。</p>
+      <div id="review"></div>
+    </div>
+  </section>
+
+  <!-- ===== TEACHER SCREEN ===== -->
+  <section id="screen-teacher" class="hidden">
+    <div class="card" id="teacher-login">
+      <h2>教員用ページ</h2>
+      <label class="fld" for="in-pw">パスワード</label>
+      <input type="password" id="in-pw" placeholder="パスワードを入力" />
+      <div id="pw-err" class="err"></div>
+      <div style="margin-top:16px;">
+        <button class="btn" id="btn-teacher-login">ログイン</button>
+        <button class="btn secondary" id="btn-teacher-back">戻る</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="teacher-panel">
+      <h2>受験結果一覧</h2>
+      <p class="meta" id="teacher-count"></p>
+      <div class="note">
+        短文回答は記述内容（短答1〜4の列）を確認のうえ、必要に応じて点数を修正してください。
+        自動採点はキーワードの有無に基づく目安です。
+      </div>
+      <div style="margin:16px 0;">
+        <button class="btn" id="btn-csv">CSVをダウンロード</button>
+        <button class="btn secondary" id="btn-teacher-logout">ログアウト</button>
+        <button class="btn danger" id="btn-clear" style="float:right;">全データを削除</button>
+      </div>
+      <div class="scroll-x">
+        <table id="teacher-table"></table>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   設定
+   ============================================================ */
+// ▼▼▼ 結果の送信先（Google Apps Script ウェブアプリのURL）▼▼▼
+// 「セットアップ手順.md」に従って取得したURLを、下の "" の中に貼り付けてください。
+// 空のままでも動作しますが、その場合は結果はこの端末内にのみ保存されます。
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzT0Yp31V2z58IJd1zl5gTcdyUZkDAVeGKxSexNo0Zsdc5jJ023CrcnWSLNUa-WQtV-/exec";
+// ▲▲▲ ここまで ▲▲▲
+
+// 教員用パスワード（必要に応じて変更してください）
+const TEACHER_PASSWORD = "eap-teacher";
+const STORAGE_KEY = "tc_quiz_results_v1";
+const PASS_MARK = 90;
+const MC_POINTS = 6;   // 選択式 1問あたりの配点
+const SA_POINTS = 10;  // 短文回答 1問あたりの配点
+
+/* ============================================================
+   問題データ
+   ============================================================ */
+// 選択式（correct: true が正解）
+const MC = [
+  {
+    id: "mc1", tag: "Kintsch理論",
+    q: "Kintsch のテキスト理解理論において、読み手が構築するとされる3つのレベルの心的表象の正しい組み合わせはどれか。",
+    options: [
+      { t: "表層的記憶・テキストベース・状況モデル", correct: true },
+      { t: "短期記憶・長期記憶・作動記憶", correct: false },
+      { t: "音韻表象・正書法表象・意味表象", correct: false },
+      { t: "下位レベル処理・中位レベル処理・上位レベル処理", correct: false },
+    ],
+  },
+  {
+    id: "mc2", tag: "テキスト理解の定義",
+    q: "本授業の定義に従うと、「テキストを理解する」とはどのような状態を指すか。",
+    options: [
+      { t: "テキストが「言いたいこと」に対する首尾一貫した状況モデルが構築された状態", correct: true },
+      { t: "テキスト中のすべての単語を正確に和訳できる状態", correct: false },
+      { t: "テキスト中の語句をそのまま暗記できている状態", correct: false },
+      { t: "テキストの文法構造をすべて図式化できる状態", correct: false },
+    ],
+  },
+  {
+    id: "mc3", tag: "テキストベース",
+    q: "「テキストベース」の説明として最も適切なものはどれか。",
+    options: [
+      { t: "テキストが直接「言っていること」に限られた表象", correct: true },
+      { t: "テキスト情報と読み手の背景知識が統合された表象", correct: false },
+      { t: "テキストの語句そのものの見た目に関する表象", correct: false },
+      { t: "読み手の感情的な反応を中心とした表象", correct: false },
+    ],
+  },
+  {
+    id: "mc4", tag: "状況モデル",
+    q: "「状況モデル」の説明として最も適切なものはどれか。",
+    options: [
+      { t: "テキスト情報と読み手の知識とが統合された、テキストを超えた表象", correct: true },
+      { t: "テキストが直接「言っていること」だけに限られた表象", correct: false },
+      { t: "テキスト中の語句の表記を逐語的に保持した表象", correct: false },
+      { t: "テキストの単語の発音情報に関する表象", correct: false },
+    ],
+  },
+  {
+    id: "mc5", tag: "和訳と理解",
+    q: "「英文を和訳できること」は、主にどのレベルの心的表象が構築されていることに対応するか。",
+    options: [
+      { t: "テキストベース", correct: true },
+      { t: "状況モデル", correct: false },
+      { t: "メタ認知的表象", correct: false },
+      { t: "感覚記憶", correct: false },
+    ],
+  },
+  {
+    id: "mc6", tag: "状況モデルの測定",
+    q: "授業で挙げられた、状況モデルを測定する代表的な手法の組み合わせはどれか。",
+    options: [
+      { t: "推論問題と問題解決（転移）課題", correct: true },
+      { t: "和訳問題と空所補充問題", correct: false },
+      { t: "音読テストとディクテーション", correct: false },
+      { t: "語彙サイズテストと文法穴埋め", correct: false },
+    ],
+  },
+  {
+    id: "mc7", tag: "テストの実用性",
+    q: "状況モデルレベルの読解問題を high-stakes test で用いるのが難しい主な理由はどれか。",
+    options: [
+      { t: "解答に読み手の先行知識が伴うため、採点の信頼性と測定の妥当性を確保しにくいから", correct: true },
+      { t: "問題作成に費用がかかりすぎるから", correct: false },
+      { t: "受験者が解答を楽しんでしまうから", correct: false },
+      { t: "テキストベースよりも常に簡単になってしまうから", correct: false },
+    ],
+  },
+  {
+    id: "mc8", tag: "外国語読解",
+    q: "母語読解と比較したときの、外国語読解の最大の特徴はどれか。",
+    options: [
+      { t: "下位レベル処理（単語認知・統語解析など）にかかる認知負荷が高いこと", correct: true },
+      { t: "上位レベル処理が母語よりも自動化されていること", correct: false },
+      { t: "背景知識をまったく使わずに読めること", correct: false },
+      { t: "認知資源が母語読解より豊富に使えること", correct: false },
+    ],
+  },
+  {
+    id: "mc9", tag: "Horiba (2000)",
+    q: "Horiba (2000) の思考発話研究で示された、外国語学習者の読解プロセスの特徴として正しいものはどれか。",
+    options: [
+      { t: "下位レベル処理に関する発話が中心で、目的やテキストに応じた上位レベル処理の変化が小さい", correct: true },
+      { t: "母語話者よりも柔軟に読解プロセスを切り替えていた", correct: false },
+      { t: "推論生成に関する発話が母語話者より多かった", correct: false },
+      { t: "読解目的によって処理を大きく変化させていた", correct: false },
+    ],
+  },
+  {
+    id: "mc10", tag: "語彙表象",
+    q: "Perfetti (2007) の Lexical Quality Hypothesis の主張として最も適切なものはどれか。",
+    options: [
+      { t: "語の意味・綴り・発音・用法などの情報が強く結びついている（語彙表象の質が高い）ほど、語を速く正確に認知できる", correct: true },
+      { t: "語の意味さえ知っていれば、読解速度は決まる", correct: false },
+      { t: "語彙の量が多いほど、必ず状況モデルが構築される", correct: false },
+      { t: "発音を知らなくても綴りさえ分かれば認知は自動化する", correct: false },
+    ],
+  },
+];
+
+// 短文回答（keywordGroups: 各グループ内のいずれかの語を含めば配点を獲得）
+const SA = [
+  {
+    id: "sa1", tag: "和訳と状況モデル",
+    q: "「英文を和訳できること」は、必ずしも「状況モデルを構築できている（＝英文を理解している）」とは言えません。その理由を、テキストベースと状況モデルの違いに触れて説明してください。",
+    placeholder: "例：和訳はテキストが「言っていること」を日本語にする作業が中心で…",
+    keywordGroups: [
+      ["テキストベース", "言っていること", "明示", "書いてある", "書かれて", "直接"],
+      ["状況モデル", "言いたいこと"],
+      ["知識", "統合", "超え", "推論", "応用"],
+      ["和訳", "翻訳", "日本語", "訳"],
+    ],
+  },
+  {
+    id: "sa2", tag: "テストの妥当性・信頼性",
+    q: "状況モデルレベルの読解問題を、大学入試のような high-stakes test で用いることが難しいのはなぜですか。「信頼性」「妥当性」という語を用いて説明してください。",
+    placeholder: "例：状況モデルレベルの問題では、解答に読み手の先行知識が伴うため…",
+    keywordGroups: [
+      ["信頼性"],
+      ["妥当性"],
+      ["先行知識", "背景知識", "知識"],
+      ["採点", "正解", "判断", "区別", "何を測", "測っている"],
+    ],
+  },
+  {
+    id: "sa3", tag: "外国語読解と認知資源",
+    q: "外国語学習者が、推論生成などの上位レベル処理に認知資源を充てにくいのはなぜですか。「下位レベル処理」「認知資源」という語を用いて説明してください。",
+    placeholder: "例：外国語学習者は単語認知や統語解析などの下位レベル処理に…",
+    keywordGroups: [
+      ["下位レベル", "下位処理", "単語認知", "文法", "語彙", "統語"],
+      ["認知資源", "認知的", "リソース", "キャパシティ", "認知負荷"],
+      ["自動", "ボトルネック", "精一杯", "負荷", "意識"],
+      ["上位", "推論", "限ら", "有限", "充て", "足りな", "残ら"],
+    ],
+  },
+  {
+    id: "sa4", tag: "語彙表象と読解",
+    q: "Lexical Quality Hypothesis（Perfetti, 2007）に基づいて、「語彙表象の質」が読解にどのように影響するかを説明してください。",
+    placeholder: "例：語の情報が強く結びついている（語彙表象の質が高い）ほど…",
+    keywordGroups: [
+      ["語彙表象", "語の情報", "結びつ"],
+      ["質"],
+      ["速", "正確", "自動"],
+      ["認知資源", "内容理解", "読解", "スムーズ"],
+    ],
+  },
+];
+
+/* ============================================================
+   ユーティリティ
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+function show(id) {
+  ["screen-start","screen-quiz","screen-result","screen-teacher"].forEach(s => {
+    $(s).classList.toggle("hidden", s !== id);
+  });
+  window.scrollTo(0, 0);
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function normalize(s) {
+  return (s || "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/\s+/g, "");
+}
+function esc(s) {
+  return (s || "").replace(/[&<>"']/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+
+/* ============================================================
+   状態
+   ============================================================ */
+let student = { name: "", id: "" };
+let quizOrder = [];   // {type:'mc'|'sa', data, options?(shuffled)}
+
+/* ============================================================
+   スタート
+   ============================================================ */
+$("btn-start").addEventListener("click", () => {
+  const name = $("in-name").value.trim();
+  const id = $("in-id").value.trim();
+  if (!name || !id) {
+    $("start-err").textContent = "氏名と学籍番号の両方を入力してください。";
+    return;
+  }
+  $("start-err").textContent = "";
+  student = { name, id };
+  buildQuiz();
+  show("screen-quiz");
+});
+
+$("link-teacher").addEventListener("click", () => {
+  $("in-pw").value = "";
+  $("pw-err").textContent = "";
+  $("teacher-login").classList.remove("hidden");
+  $("teacher-panel").classList.add("hidden");
+  show("screen-teacher");
+});
+
+/* ============================================================
+   クイズ生成
+   ============================================================ */
+function buildQuiz() {
+  $("quiz-who").textContent = `${student.name}（${student.id}）`;
+  // 問題順をシャッフル（選択式→短文の順は保つ）
+  const mcShuffled = shuffle(MC).map(m => ({
+    type: "mc", data: m, options: shuffle(m.options),
+  }));
+  const saShuffled = shuffle(SA).map(s => ({ type: "sa", data: s }));
+  quizOrder = mcShuffled.concat(saShuffled);
+
+  const cont = $("questions");
+  cont.innerHTML = "";
+  let mcNo = 0, saNo = 0;
+  quizOrder.forEach((item, idx) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    if (item.type === "mc") {
+      mcNo++;
+      const qid = item.data.id;
+      let html = `<div class="qtext">問${mcNo}（選択式・${MC_POINTS}点）`
+        + `<span class="qtag">${esc(item.data.tag)}</span></div>`
+        + `<div style="margin:6px 0 10px;">${esc(item.data.q)}</div>`;
+      item.options.forEach((op, oi) => {
+        html += `<label class="opt" data-qid="${qid}">`
+          + `<input type="radio" name="${qid}" value="${oi}">`
+          + `<span>${esc(op.t)}</span></label>`;
+      });
+      card.innerHTML = html;
+    } else {
+      saNo++;
+      const qid = item.data.id;
+      card.innerHTML = `<div class="qtext">記述${saNo}（短文回答・${SA_POINTS}点）`
+        + `<span class="qtag">${esc(item.data.tag)}</span></div>`
+        + `<div style="margin:6px 0 10px;">${esc(item.data.q)}</div>`
+        + `<textarea id="${qid}" placeholder="${esc(item.data.placeholder)}"></textarea>`;
+    }
+    cont.appendChild(card);
+  });
+
+  // 選択肢のハイライト & 進捗
+  cont.querySelectorAll(".opt").forEach(lbl => {
+    lbl.addEventListener("click", () => {
+      cont.querySelectorAll(`.opt[data-qid="${lbl.dataset.qid}"]`)
+        .forEach(o => o.classList.remove("sel"));
+      lbl.classList.add("sel");
+      updateProgress();
+    });
+  });
+  cont.querySelectorAll("textarea").forEach(t =>
+    t.addEventListener("input", updateProgress));
+  updateProgress();
+}
+
+function updateProgress() {
+  const totalMc = MC.length;
+  let answeredMc = 0;
+  MC.forEach(m => {
+    if (document.querySelector(`input[name="${m.id}"]:checked`)) answeredMc++;
+  });
+  let answeredSa = 0;
+  SA.forEach(s => { if (($(s.id).value || "").trim().length > 0) answeredSa++; });
+  const total = MC.length + SA.length;
+  const answered = answeredMc + answeredSa;
+  $("progress").style.width = (answered / total * 100) + "%";
+  $("submit-hint").textContent = `${answered} / ${total} 問 入力済み`;
+}
+
+/* ============================================================
+   採点
+   ============================================================ */
+$("btn-submit").addEventListener("click", async () => {
+  // 未回答チェック
+  const unanswered = [];
+  MC.forEach((m, i) => {
+    if (!document.querySelector(`input[name="${m.id}"]:checked`)) unanswered.push("選択");
+  });
+  SA.forEach(s => { if (!($(s.id).value || "").trim()) unanswered.push("記述"); });
+  if (unanswered.length > 0) {
+    $("quiz-err").textContent = `未回答の問題が ${unanswered.length} 問あります。すべて回答してから採点してください。`;
+    return;
+  }
+  $("quiz-err").textContent = "";
+  $("btn-submit").disabled = true;
+
+  const result = grade();
+  saveResult(result);          // 端末内にバックアップ保存
+  renderResult(result);
+  show("screen-result");
+
+  // サーバー（Google スプレッドシート）へ送信
+  const statusEl = $("send-status");
+  if (GAS_URL) {
+    statusEl.textContent = "結果を送信しています…";
+    const res = await sendToServer(result);
+    statusEl.textContent = res.sent
+      ? "✓ 結果を送信しました。"
+      : "⚠ 送信できませんでした。通信環境を確認のうえ、教員に連絡してください（結果はこの端末に保存されています）。";
+  } else {
+    statusEl.textContent = "";
+  }
+  $("btn-submit").disabled = false;
+});
+
+// 結果をGAS（Google スプレッドシート）に送信
+async function sendToServer(r) {
+  if (!GAS_URL) return { sent: false, reason: "no-url" };
+  try {
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        name: r.name, id: r.id, total: r.total,
+        mcScore: r.mcScore, saScore: r.saScore, passed: r.passed,
+        timestamp: r.timestamp, sa: r.saTexts,
+      }),
+    });
+    return { sent: true };
+  } catch (err) {
+    return { sent: false, reason: String(err) };
+  }
+}
+
+function grade() {
+  let mcScore = 0;
+  const mcReview = [];
+  MC.forEach(m => {
+    const sel = document.querySelector(`input[name="${m.id}"]:checked`);
+    // シャッフル後の選択肢から、この問題の表示順を取得
+    const item = quizOrder.find(q => q.type === "mc" && q.data.id === m.id);
+    const chosenIdx = sel ? parseInt(sel.value, 10) : -1;
+    const chosen = chosenIdx >= 0 ? item.options[chosenIdx] : null;
+    const correct = chosen && chosen.correct;
+    if (correct) mcScore += MC_POINTS;
+    const correctOpt = m.options.find(o => o.correct);
+    mcReview.push({
+      q: m.q, tag: m.tag,
+      chosen: chosen ? chosen.t : "（未回答）",
+      correct: correctOpt.t, ok: !!correct,
+    });
+  });
+
+  let saScore = 0;
+  const saReview = [];
+  const saTexts = {};
+  SA.forEach(s => {
+    const raw = ($(s.id).value || "").trim();
+    saTexts[s.id] = raw;
+    const norm = normalize(raw);
+    const groups = s.keywordGroups;
+    const per = SA_POINTS / groups.length;
+    let hit = 0;
+    const matched = [];
+    groups.forEach(g => {
+      const found = g.some(k => norm.includes(normalize(k)));
+      if (found) { hit++; matched.push(true); } else { matched.push(false); }
+    });
+    const pts = Math.round(hit * per * 10) / 10;
+    saScore += pts;
+    saReview.push({ q: s.q, tag: s.tag, text: raw, pts, max: SA_POINTS, hit, total: groups.length });
+  });
+  saScore = Math.round(saScore * 10) / 10;
+
+  const total = Math.round((mcScore + saScore) * 10) / 10;
+  return {
+    name: student.name, id: student.id,
+    mcScore, saScore, total,
+    passed: total >= PASS_MARK,
+    mcReview, saReview, saTexts,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/* ============================================================
+   結果表示
+   ============================================================ */
+function renderResult(r) {
+  $("result-who").textContent = `${r.name}（${r.id}）`;
+  $("result-score").textContent = r.total;
+  $("result-score").className = "score-big " + (r.passed ? "pass" : "fail");
+  const pill = $("result-pill");
+  pill.textContent = r.passed ? "合格" : `不合格（あと ${Math.max(0, Math.round((PASS_MARK - r.total)*10)/10)} 点）`;
+  pill.className = "pill " + (r.passed ? "pass" : "fail");
+
+  $("result-breakdown").innerHTML =
+    `<div><span>選択式（${MC.length}問 × ${MC_POINTS}点）</span><strong>${r.mcScore} 点</strong></div>`
+    + `<div><span>短文回答（${SA.length}問 × ${SA_POINTS}点）</span><strong>${r.saScore} 点</strong></div>`
+    + `<div><span>合計</span><strong>${r.total} / 100 点</strong></div>`;
+
+  const act = $("result-actions");
+  if (r.passed) {
+    act.innerHTML = `<p class="meta">合格おめでとうございます。結果は記録されました。</p>`
+      + `<button class="btn secondary" id="btn-finish">最初の画面に戻る</button>`;
+    setTimeout(() => $("btn-finish").addEventListener("click", () => location.reload()), 0);
+  } else {
+    act.innerHTML = `<p class="meta">合格ラインは90点です。下の「解答の確認」で復習してから、やり直してください。</p>`
+      + `<button class="btn" id="btn-retry">やり直す</button>`;
+    setTimeout(() => $("btn-retry").addEventListener("click", () => {
+      buildQuiz(); $("quiz-err").textContent = ""; show("screen-quiz");
+    }), 0);
+  }
+
+  // 復習
+  let html = "";
+  r.mcReview.forEach((m, i) => {
+    html += `<div class="review-item ${m.ok ? "ok" : "ng"}">`
+      + `<div><strong>選択 ${m.ok ? "✓ 正解" : "✗ 不正解"}</strong> <span class="qtag">${esc(m.tag)}</span></div>`
+      + `<div>${esc(m.q)}</div>`
+      + `<div class="ans">あなたの解答：${esc(m.chosen)}</div>`
+      + (m.ok ? "" : `<div class="ans">正解：${esc(m.correct)}</div>`)
+      + `</div>`;
+  });
+  r.saReview.forEach((s, i) => {
+    const ok = s.pts >= s.max * 0.7;
+    html += `<div class="review-item ${ok ? "ok" : "ng"}">`
+      + `<div><strong>記述：${s.pts} / ${s.max} 点</strong>（キーワード ${s.hit}/${s.total}）`
+      + ` <span class="qtag">${esc(s.tag)}</span></div>`
+      + `<div>${esc(s.q)}</div>`
+      + `<div class="ans">あなたの解答：${esc(s.text) || "（未回答）"}</div>`
+      + `</div>`;
+  });
+  $("review").innerHTML = html;
+}
+
+/* ============================================================
+   保存（localStorage）
+   ============================================================ */
+function loadAll() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch (e) { return []; }
+}
+function saveResult(r) {
+  const all = loadAll();
+  all.push({
+    name: r.name, id: r.id,
+    total: r.total, mcScore: r.mcScore, saScore: r.saScore,
+    passed: r.passed, timestamp: r.timestamp,
+    sa: r.saTexts,
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+}
+
+/* ============================================================
+   教員用
+   ============================================================ */
+$("btn-teacher-back").addEventListener("click", () => location.reload());
+$("btn-teacher-login").addEventListener("click", () => {
+  if ($("in-pw").value === TEACHER_PASSWORD) {
+    $("teacher-login").classList.add("hidden");
+    $("teacher-panel").classList.remove("hidden");
+    renderTeacher();
+  } else {
+    $("pw-err").textContent = "パスワードが正しくありません。";
+  }
+});
+$("in-pw").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-teacher-login").click(); });
+$("btn-teacher-logout").addEventListener("click", () => location.reload());
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function renderTeacher() {
+  const all = loadAll();
+  $("teacher-count").textContent = `登録件数：${all.length} 件（この端末・ブラウザに保存されたデータ）`;
+  let html = "<tr><th>氏名</th><th>学籍番号</th><th class='c'>合計</th>"
+    + "<th class='c'>選択</th><th class='c'>記述</th><th class='c'>合否</th><th>受験日時</th>"
+    + "<th>短答1</th><th>短答2</th><th>短答3</th><th>短答4</th></tr>";
+  if (all.length === 0) {
+    html += "<tr><td colspan='11' class='c meta'>データがありません。</td></tr>";
+  } else {
+    all.slice().reverse().forEach(r => {
+      const sa = r.sa || {};
+      html += `<tr><td>${esc(r.name)}</td><td>${esc(r.id)}</td>`
+        + `<td class='c'><strong>${r.total}</strong></td>`
+        + `<td class='c'>${r.mcScore}</td><td class='c'>${r.saScore}</td>`
+        + `<td class='c'>${r.passed ? "<span style='color:#1f9d55'>合格</span>" : "<span style='color:#d9433f'>不合格</span>"}</td>`
+        + `<td>${fmtDate(r.timestamp)}</td>`
+        + `<td>${esc(sa.sa1)}</td><td>${esc(sa.sa2)}</td><td>${esc(sa.sa3)}</td><td>${esc(sa.sa4)}</td></tr>`;
+    });
+  }
+  $("teacher-table").innerHTML = html;
+}
+
+function csvCell(s) {
+  s = (s == null ? "" : String(s)).replace(/"/g, '""');
+  return `"${s}"`;
+}
+$("btn-csv").addEventListener("click", () => {
+  const all = loadAll();
+  const head = ["氏名","学籍番号","合計点","選択式得点","短文回答得点","合否","受験日時",
+    "短答1（和訳と状況モデル）","短答2（妥当性・信頼性）","短答3（認知資源）","短答4（語彙表象）"];
+  const rows = [head.map(csvCell).join(",")];
+  all.forEach(r => {
+    const sa = r.sa || {};
+    rows.push([
+      r.name, r.id, r.total, r.mcScore, r.saScore,
+      r.passed ? "合格" : "不合格", fmtDate(r.timestamp),
+      sa.sa1, sa.sa2, sa.sa3, sa.sa4,
+    ].map(csvCell).join(","));
+  });
+  // BOM付きでExcelの文字化けを防止
+  const blob = new Blob(["﻿" + rows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const today = new Date();
+  const p = n => String(n).padStart(2, "0");
+  a.href = url;
+  a.download = `到達度テスト成績_${today.getFullYear()}${p(today.getMonth()+1)}${p(today.getDate())}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+$("btn-clear").addEventListener("click", () => {
+  if (confirm("保存されているすべての受験結果を削除します。よろしいですか？（元に戻せません）")) {
+    localStorage.removeItem(STORAGE_KEY);
+    renderTeacher();
+  }
+});
+</script>
+</body>
+</html>
